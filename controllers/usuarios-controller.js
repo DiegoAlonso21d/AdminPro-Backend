@@ -7,13 +7,26 @@ const Usuario = require("../models/usuario");
 
 const getUsuarios = async(req, res) => {
 
-const usuarios=await Usuario.find();
+    const desde=Number(req.query.desde) || 0;
+    console.log(desde)
+
+
+
+const [usuarios,total]= await Promise.all([
+ Usuario
+.find({},"nombre email role google img")
+.skip(desde)
+.limit(5),
+
+Usuario.count()
+])
 
   res.status(200).json({
     ok: true,
     msg: "Hola Mundo",
     usuarios,
-     uid:req.uid
+     uid:req.uid,
+     total
   });
 };
 
@@ -48,7 +61,8 @@ const crearUsuario =async (req, res) => {
       res.status(200).json({
         ok: true,
         msg: "Creando Usuario",
-        toker:token
+        usuario:usuario,
+        token:token
       });
 
     
