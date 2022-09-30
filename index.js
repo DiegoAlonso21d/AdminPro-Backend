@@ -10,6 +10,9 @@ const app = express();
 //Configurar cors
 app.use(cors());
 
+//Carpeta publica
+app.use(express.static("public"))
+
 //Middlewares
 
 app.use(express.json());
