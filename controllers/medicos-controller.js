@@ -1,4 +1,5 @@
 
+const { findByIdAndUpdate } = require('../models/Medico');
 const Medico=require('../models/Medico')
 
 const getMedicos = async(req, res) => {
@@ -48,18 +49,82 @@ try {
 
 };
 
-const actualizarMedico = (req, res) => {
-  res.json({
-    ok: true,
-    msg: "actualizarMedico",
-  });
+const actualizarMedico =async (req, res) => {
+
+  const id=req.params.id
+  const uid=req.uid
+
+  try {
+
+    const medico=await Medico.findById(id);
+    
+    if(!medico){
+      return res.status(404).json({
+        ok:false,
+        msg:"Medico no entonctrado por id"
+      })
+    }
+
+    const cambiosMedico={
+      ...req.body,
+      usuario:uid
+    } 
+
+    const medicoActualizado=await Medico.findByIdAndUpdate(id,cambiosMedico,{new:true})
+
+
+      res.json({
+        ok: true,
+        msg: "actualizarMedico",
+        medicoActualizado,
+      });
+  } catch (error) {
+
+      console.log(error)
+         res.status(404).json({
+           ok: false,
+           msg: "Error",
+         });
+  }
+
+
 };
 
-const borrarMedico = (req, res) => {
-  res.json({
-    ok: true,
-    msg: "borrarMedico",
-  });
+const borrarMedico = async(req, res) => {
+ const id=req.params.id
+ 
+
+  try {
+
+    const medico=await Medico.findById(id);
+    
+    if(!medico){
+      return res.status(404).json({
+        ok:false,
+        msg:"Medico no entonctrado por id"
+      })
+    }
+
+ 
+    await Medico.findByIdAndDelete(id)
+
+
+
+      res.json({
+        ok: true,
+        msg: "Borrar Medico",
+      
+      });
+  } catch (error) {
+
+      console.log(error)
+         res.status(404).json({
+           ok: false,
+           msg: "Error",
+         });
+  }
+
+
 };
 
 module.exports = {

@@ -1,28 +1,21 @@
-
-
-
 // Ruta: /api/hospitales
 
+const { Router } = require("express");
+const { check } = require("express-validator");
+const { validarCampos } = require("../middlewares/validar-campos");
 
-const {Router}=require('express');
-const{check}=require('express-validator')
-const {validarCampos}=require('../middlewares/validar-campos')
-
-
-const { validarJWT } = require('../middlewares/validar-JWT');
+const { validarJWT } = require("../middlewares/validar-JWT");
 
 const {
-      getMedicos,
+  getMedicos,
   crearMedico,
   actualizarMedico,
   borrarMedico,
-}=require('../controllers/medicos-controller')
+} = require("../controllers/medicos-controller");
 
-const { generarJWT } = require('../helpers/jwt');
+const { generarJWT } = require("../helpers/jwt");
 
-
-const router=Router();
-
+const router = Router();
 
 router.get("/", getMedicos);
 router.post(
@@ -36,17 +29,17 @@ router.post(
   crearMedico
 );
 
-
-router.put("/:id", [], actualizarMedico);
+router.put(
+  "/:id",
+  [
+    validarJWT,
+    check("nombre", "El nombre del medico es necesario").not().isEmpty(),
+    check("hospital", "El hospital id debe ser valido").isMongoId(),
+    validarCampos,
+  ],
+  actualizarMedico
+);
 
 router.delete("/:id", borrarMedico);
 
-
-
-
-
-
-module.exports=router;
-
-
-
+module.exports = router;
